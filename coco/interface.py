@@ -82,8 +82,12 @@ class SSHInterface(paramiko.ServerInterface):
                 return paramiko.AUTH_PARTIALLY_SUCCESSFUL
             return paramiko.AUTH_SUCCESSFUL
 
+    '''
+    PublicKey认证
+    '''
     def check_auth_publickey(self, username, key):
         key = key.get_base64()
+        ## TODO 使用username和解码后的编码后的pubKey作为查询条件从DB获取用户，能获取就是认证成功
         user = self.validate_auth(username, public_key=key)
 
         if not user:
@@ -120,6 +124,7 @@ class SSHInterface(paramiko.ServerInterface):
                 not self.check_allow_ssh_user(username):
             logger.warn("User in black list or not allowed: {}".format(username))
             return None
+        # TODO 身份认证
         info = app_service.authenticate(
             username, password=password, public_key=public_key,
             remote_addr=self.connection.addr[0]

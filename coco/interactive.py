@@ -101,12 +101,14 @@ class InteractiveServer:
             _("{T}8) Enter {green}r{end} to refresh your assets and nodes.{R}"),
             _("{T}0) Enter {green}q{end} exit.{R}")
         ]
+        # TODO 发送欢迎界面
         self.client.send_unicode(header.format(
             title="\033[1;32m", user=self.client.user,
             header_title=header_title, end="\033[0m",
             T='\t', R='\r\n\r'
         ))
         for item in menu:
+            # TODO 发送菜单
             self.client.send_unicode(item.format(
                 green="\033[32m", end="\033[0m",
                 T='\t', R='\r\n\r'
@@ -149,6 +151,7 @@ class InteractiveServer:
             from .logger import create_logger
             create_logger()
         else:
+            ### TODO 连接远程服务器
             self.search_and_proxy_assets(opt)
 
     #
@@ -163,8 +166,10 @@ class InteractiveServer:
         assets = self.search_assets(opt)
         if assets and len(assets) == 1:
             asset = assets[0]
+            ### TODO 连接远程服务
             self.proxy(asset)
         else:
+            ## TODO 输出查询到的条目
             self.display_assets_paging(assets)
 
     def refresh_assets_nodes(self):
@@ -482,6 +487,7 @@ class InteractiveServer:
                     'please use web terminal to access')
             self.client.send_unicode(warning(msg))
             return
+        ### TODO 创建连接远程服务的代理服务器
         forwarder = ProxyServer(self.client, asset, system_user)
         forwarder.proxy()
 
@@ -490,10 +496,13 @@ class InteractiveServer:
     #
 
     def interact(self):
+        # TODO 展示Banner
         self.display_banner()
         while not self.closed:
             try:
+                ### TODO 接收命令
                 opt = net_input(self.client, prompt='Opt> ', before=1)
+                ### TODO 分发命令
                 rv = self.dispatch(opt)
                 if rv is self._sentinel:
                     break

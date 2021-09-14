@@ -191,6 +191,7 @@ class Session:
 
                     self.date_last_active = datetime.datetime.utcnow()
                     for watcher in [self.client] + self._watchers + self._sharers:
+                        ### TODO 将远程服务相应转发给客户端
                         watcher.send(data)
                 elif sock == self.client:
                     if len(data) == 0:
@@ -200,11 +201,14 @@ class Session:
                             watcher.send(msg.encode("utf-8"))
                         self.is_finished = True
                         break
+                    ## TODO 将客户端指令发送给远程服务
                     self.server.send(data)
                 elif sock == self.stop_evt:
+                    ## TODO 收到退出事件
                     self.is_finished = True
                     break
                 elif sock == self.client.change_size_evt:
+                    ## TODO 收到窗口变动事件
                     self.resize_win_size()
         logger.debug("Session stop event set: {}".format(self.id))
 

@@ -70,14 +70,19 @@ class SSHServer:
             except Exception as e:
                 logger.error("Start SSH server error: {}".format(e))
 
+    '''
+    TODO JumpServer处理Ssh请求的入口
+    '''
     def handle_connection(self, sock, addr):
         logger.debug("Handle new connection from: {}".format(addr))
+        # TODO 使用paramiko实现的sshServer
         transport = paramiko.Transport(sock, gss_kex=False)
         try:
             transport.load_server_moduli()
         except IOError:
             logger.warning("Failed load moduli -- gex will be unsupported")
 
+        ## TODO 设置hostKey
         transport.add_server_key(self.host_key)
         transport.set_subsystem_handler(
             'sftp', paramiko.SFTPServer, SFTPServer
@@ -102,6 +107,7 @@ class SSHServer:
 
                 client = connection.clients.get(chan.get_id())
                 client.chan = chan
+                # TODO 新开一个线程执行指令分发器
                 t = threading.Thread(target=self.dispatch, args=(client,))
                 t.daemon = True
                 t.start()
@@ -125,6 +131,7 @@ class SSHServer:
             if kind == 'session' and chan_type in supported:
                 logger.info("Dispatch client to interactive mode")
                 try:
+                    # TODO 交互式命令处理入口
                     InteractiveServer(client).interact()
                 except IndexError as e:
                     logger.error("Unexpected error occur: {}".format(e))
